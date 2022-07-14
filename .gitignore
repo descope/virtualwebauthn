@@ -1,0 +1,31 @@
+# Mac OS X files
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+.history/
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+__debug_bin
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+coverage.html
+
+# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
