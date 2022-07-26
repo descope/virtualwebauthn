@@ -11,7 +11,7 @@ import (
 /// Options
 
 type AttestationOptions struct {
-	Challenge []byte `json:"challenge,omitempty"`
+	Challenge          []byte   `json:"challenge,omitempty"`
 	ExcludeCredentials []string `json:"excludeCredentials,omitempty"`
 }
 
@@ -56,7 +56,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	}
 	clientDataJSON, err := json.Marshal(clientData)
 	if err != nil {
-		panic("Failed to marshal json")
+		panic("failed to marshal json")
 	}
 	clientDataJSONEncoded := base64.RawURLEncoding.EncodeToString(clientDataJSON)
 
@@ -85,7 +85,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 
 	sig, err := cred.Key.SigningKey.Sign(digest)
 	if err != nil {
-		panic("Failed to sign digest")
+		panic("failed to sign digest")
 	}
 
 	var algo int
@@ -122,7 +122,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 
 	attestationResultBytes, err := json.Marshal(attestationResult)
 	if err != nil {
-		panic("Failed to marshal json")
+		panic("failed to marshal json")
 	}
 
 	return string(attestationResultBytes)
@@ -131,9 +131,9 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 /// Helpers
 
 type attestationOptionsValues struct {
-	Challenge string                    `json:"challenge,omitempty"`
+	Challenge          string                                `json:"challenge,omitempty"`
 	ExcludeCredentials []attestationOptionsExcludeCredential `json:"excludeCredentials,omitempty"`
-	PublicKey *attestationOptionsValues `json:"publicKey,omitempty"`
+	PublicKey          *attestationOptionsValues             `json:"publicKey,omitempty"`
 }
 
 type attestationOptionsExcludeCredential struct {

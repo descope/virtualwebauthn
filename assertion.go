@@ -59,7 +59,7 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 	}
 	clientDataJSON, err := json.Marshal(clientData)
 	if err != nil {
-		panic("Failed to marshal json")
+		panic("failed to marshal json")
 	}
 	clientDataJSONEncoded := base64.RawURLEncoding.EncodeToString(clientDataJSON)
 
@@ -80,7 +80,7 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 
 	sig, err := cred.Key.SigningKey.Sign(digest)
 	if err != nil {
-		panic("Failed to sign digest")
+		panic("failed to sign digest")
 	}
 
 	credIDEncoded := base64.RawURLEncoding.EncodeToString(cred.ID)
@@ -101,7 +101,7 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 
 	assertionResultBytes, err := json.Marshal(assertionResult)
 	if err != nil {
-		panic("Failed to marshal json")
+		panic("failed to marshal json")
 	}
 
 	return string(assertionResultBytes)

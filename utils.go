@@ -15,11 +15,11 @@ type clientData struct {
 func marshalCbor(v any) []byte {
 	encoder, err := cbor.CTAP2EncOptions().EncMode()
 	if err != nil {
-		panic("Failed to instantiate cbor encoder")
+		panic("failed to instantiate cbor encoder")
 	}
 	bytes, err := encoder.Marshal(v)
 	if err != nil {
-		panic("Failed to encode to cbor")
+		panic("failed to encode to cbor")
 	}
 	return bytes
 }
@@ -28,7 +28,7 @@ func randomBytes(length int) []byte {
 	bytes := make([]byte, length)
 	num, err := rand.Read(bytes)
 	if err != nil || num != length {
-		panic("Failed to generate random bytes")
+		panic("failed to generate random bytes")
 	}
 	return bytes
 }

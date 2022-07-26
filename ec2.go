@@ -20,7 +20,7 @@ type ec2SigningKey struct {
 func newEC2SigningKey() *ec2SigningKey {
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
-		panic("Failed to generate signing key")
+		panic("failed to generate signing key")
 	}
 	info := ec2KeyInfo{
 		Type:      ec2Type,

@@ -20,7 +20,7 @@ type rsaSigningKey struct {
 func newRSASigningKey() *rsaSigningKey {
 	key, err := rsa.GenerateKey(rand.Reader, rsaSize)
 	if err != nil {
-		panic("Failed to generate signing key")
+		panic("failed to generate signing key")
 	}
 	info := rasKeyInfo{
 		Type:      rsaType,
