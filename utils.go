@@ -32,3 +32,12 @@ func randomBytes(length int) []byte {
 	}
 	return bytes
 }
+
+func bigEndianBytes[T interface{ int | uint32 }](value T, length int) []byte {
+	bytes := make([]byte, length)
+	for i := 0; i < length; i++ {
+		shift := (length - i - 1) * 8
+		bytes[i] = byte(value >> shift & 0xFF)
+	}
+	return bytes
+}

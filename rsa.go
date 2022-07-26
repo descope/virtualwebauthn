@@ -26,7 +26,7 @@ func newRSASigningKey() *rsaSigningKey {
 		Type:      rsaType,
 		Algorithm: rsaSHA256Algo,
 		Modulus:   key.N.Bytes(),
-		Exponent:  []byte{byte(key.E>>16) & 0xFF, byte(key.E>>8) & 0xFF, byte(key.E) & 0xFF},
+		Exponent:  bigEndianBytes(key.E, 3),
 	}
 	data := marshalCbor(info)
 	return &rsaSigningKey{Key: key, Data: data}

@@ -3,7 +3,7 @@ package virtualwebauthn
 type Credential struct {
 	ID      []byte `json:"id"`
 	Key     Key    `json:"key"`
-	Counter int    `json:"counter,omitempty"`
+	Counter uint32 `json:"counter,omitempty"`
 }
 
 func NewCredential(keyType KeyType) Credential {

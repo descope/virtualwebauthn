@@ -56,7 +56,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 
 	credData := []byte{}
 	credData = append(credData, auth.Aaguid[:]...)
-	credData = append(credData, 0x00, byte(len(cred.ID)))
+	credData = append(credData, bigEndianBytes(len(cred.ID), 2)...)
 	credData = append(credData, cred.ID...)
 	credData = append(credData, keyDataBytes...)
 
@@ -65,7 +65,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	authData := []byte{}
 	authData = append(authData, rpIDHash[:]...)
 	authData = append(authData, 0b_0100_0101)       // bits 0, 2 and 7 - see: https://www.w3.org/TR/webauthn/#flags
-	authData = append(authData, 0x0, 0x0, 0x0, 0x0) // counter not supported yet
+	authData = append(authData, bigEndianBytes(cred.Counter, 4)...)
 	authData = append(authData, credData...)
 
 	clientDataJSONHashed := sha256.Sum256(clientDataJSON)
