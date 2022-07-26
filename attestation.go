@@ -69,10 +69,11 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	credData = append(credData, keyDataBytes...)
 
 	rpIDHash := sha256.Sum256([]byte(rp.ID))
+	flags := authenticatorDataFlags(!auth.Options.UserNotPresent, !auth.Options.UserNotVerified, true, false)
 
 	authData := []byte{}
 	authData = append(authData, rpIDHash[:]...)
-	authData = append(authData, 0b_0100_0101)       // bits 0, 2 and 7 - see: https://www.w3.org/TR/webauthn/#flags
+	authData = append(authData, flags)
 	authData = append(authData, bigEndianBytes(cred.Counter, 4)...)
 	authData = append(authData, credData...)
 

@@ -1,12 +1,22 @@
 package virtualwebauthn
 
+type AuthenticatorOptions struct {
+	UserNotPresent  bool
+	UserNotVerified bool
+}
+
 type Authenticator struct {
-	Aaguid      [16]byte     `json:"aaguid"`
-	Credentials []Credential `json:"credentials,omitempty"`
+	Options     AuthenticatorOptions `json:"options"`
+	Aaguid      [16]byte             `json:"aaguid"`
+	Credentials []Credential         `json:"credentials,omitempty"`
 }
 
 func NewAuthenticator() Authenticator {
-	auth := Authenticator{}
+	return NewAuthenticatorWithOptions(AuthenticatorOptions{})
+}
+
+func NewAuthenticatorWithOptions(options AuthenticatorOptions) Authenticator {
+	auth := Authenticator{Options: options}
 	copy(auth.Aaguid[:], randomBytes(len(auth.Aaguid)))
 	return auth
 }
@@ -18,8 +28,8 @@ func (a *Authenticator) AddCredential(cred Credential) {
 func (a *Authenticator) FindAllowedCredential(options AssertionOptions) *Credential {
 	for i := range a.Credentials {
 		if a.Credentials[i].IsAllowedForAssertion(options) {
-				return &a.Credentials[i]
-			}
+			return &a.Credentials[i]
 		}
+	}
 	return nil
 }

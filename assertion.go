@@ -64,10 +64,11 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 	clientDataJSONEncoded := base64.RawURLEncoding.EncodeToString(clientDataJSON)
 
 	rpIDHash := sha256.Sum256([]byte(rp.ID))
+	flags := authenticatorDataFlags(!auth.Options.UserNotPresent, !auth.Options.UserNotVerified, false, false)
 
 	authData := []byte{}
 	authData = append(authData, rpIDHash[:]...)
-	authData = append(authData, 0b_0000_0101)       // bits 0 and 2 - see: https://www.w3.org/TR/webauthn/#flags
+	authData = append(authData, flags)
 	authData = append(authData, bigEndianBytes(cred.Counter, 4)...)
 	authDataEncoded := base64.RawURLEncoding.EncodeToString(authData)
 
