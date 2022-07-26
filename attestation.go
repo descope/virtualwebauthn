@@ -12,6 +12,7 @@ import (
 
 type AttestationOptions struct {
 	Challenge []byte `json:"challenge,omitempty"`
+	ExcludeCredentials []string `json:"excludeCredentials,omitempty"`
 }
 
 func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions, err error) {
@@ -34,6 +35,13 @@ func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions
 		return nil, err
 	}
 	attestationOptions.Challenge = challenge
+
+	for _, cred := range values.ExcludeCredentials {
+		if len(cred.ID) == 0 {
+			return nil, errors.New("allowed credential has an empty id")
+		}
+		attestationOptions.ExcludeCredentials = append(attestationOptions.ExcludeCredentials, cred.ID)
+	}
 
 	return attestationOptions, nil
 }
@@ -124,7 +132,13 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 
 type attestationOptionsValues struct {
 	Challenge string                    `json:"challenge,omitempty"`
+	ExcludeCredentials []attestationOptionsExcludeCredential `json:"excludeCredentials,omitempty"`
 	PublicKey *attestationOptionsValues `json:"publicKey,omitempty"`
+}
+
+type attestationOptionsExcludeCredential struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
 }
 
 type attestationStatement struct {

@@ -14,3 +14,12 @@ func NewAuthenticator() Authenticator {
 func (a *Authenticator) AddCredential(cred Credential) {
 	a.Credentials = append(a.Credentials, cred)
 }
+
+func (a *Authenticator) FindAllowedCredential(options AssertionOptions) *Credential {
+	for i := range a.Credentials {
+		if a.Credentials[i].IsAllowedForAssertion(options) {
+				return &a.Credentials[i]
+			}
+		}
+	return nil
+}

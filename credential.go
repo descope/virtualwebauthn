@@ -1,5 +1,7 @@
 package virtualwebauthn
 
+import "encoding/base64"
+
 type Credential struct {
 	ID      []byte `json:"id"`
 	Key     Key    `json:"key"`
@@ -17,4 +19,24 @@ func NewCredential(keyType KeyType) Credential {
 		panic("Invalid credential key type")
 	}
 	return cred
+}
+
+func (c *Credential) IsExcludedForAttestation(options AttestationOptions) bool {
+	encodedID := base64.StdEncoding.EncodeToString(c.ID)
+	for _, excludedID := range options.ExcludeCredentials {
+		if excludedID == encodedID {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Credential) IsAllowedForAssertion(options AssertionOptions) bool {
+	encodedID := base64.StdEncoding.EncodeToString(c.ID)
+	for _, allowedID := range options.AllowCredentials {
+		if allowedID == encodedID {
+			return true
+		}
+	}
+	return false
 }

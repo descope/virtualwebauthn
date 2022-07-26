@@ -51,25 +51,7 @@ func ParseAssertionOptions(str string) (assertionOptions *AssertionOptions, err 
 
 /// Response
 
-func CreateAssertionResponse(rp RelyingParty, auth Authenticator, options AssertionOptions) string {
-	var cred *Credential
-
-FindCredential:
-	for i := range auth.Credentials {
-		stdEncodedID := base64.StdEncoding.EncodeToString(auth.Credentials[i].ID)
-		urlEncodedID := base64.RawURLEncoding.EncodeToString(auth.Credentials[i].ID)
-		for j := range options.AllowCredentials {
-			if options.AllowCredentials[j] == stdEncodedID || options.AllowCredentials[j] == urlEncodedID {
-				cred = &auth.Credentials[i]
-				break FindCredential
-			}
-		}
-	}
-
-	if cred == nil {
-		panic("resident key flow not supported yet")
-	}
-
+func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credential, options AssertionOptions) string {
 	clientData := clientData{
 		Type:      "webauthn.get",
 		Challenge: base64.RawURLEncoding.EncodeToString(options.Challenge),
