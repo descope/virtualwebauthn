@@ -30,7 +30,7 @@ func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions
 	if len(values.Challenge) == 0 {
 		return nil, errors.New("failed to find challenge in response")
 	}
-	challenge, err := base64.StdEncoding.DecodeString(values.Challenge)
+	challenge, err := base64.RawURLEncoding.DecodeString(values.Challenge)
 	if err != nil {
 		return nil, err
 	}

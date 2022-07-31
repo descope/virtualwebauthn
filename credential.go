@@ -22,7 +22,7 @@ func NewCredential(keyType KeyType) Credential {
 }
 
 func (c *Credential) IsExcludedForAttestation(options AttestationOptions) bool {
-	encodedID := base64.StdEncoding.EncodeToString(c.ID)
+	encodedID := base64.RawURLEncoding.EncodeToString(c.ID)
 	for _, excludedID := range options.ExcludeCredentials {
 		if excludedID == encodedID {
 			return true
@@ -32,7 +32,7 @@ func (c *Credential) IsExcludedForAttestation(options AttestationOptions) bool {
 }
 
 func (c *Credential) IsAllowedForAssertion(options AssertionOptions) bool {
-	encodedID := base64.StdEncoding.EncodeToString(c.ID)
+	encodedID := base64.RawURLEncoding.EncodeToString(c.ID)
 	for _, allowedID := range options.AllowCredentials {
 		if allowedID == encodedID {
 			return true
