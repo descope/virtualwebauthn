@@ -1,7 +1,7 @@
 
 # Virtual WebAuthn
 
-The package `virtualwebauthn` provides a set of helper tools for testing full [WebAuthn](https://en.wikipedia.org/wiki/WebAuthn) authentication flows in a [relying party](https://www.w3.org/TR/webauthn-2/#webauthn-relying-party) WebAuthn server implementation without requiring a browser or an actual authenticator.
+The Go package `virtualwebauthn` provides a set of helper tools for testing full [WebAuthn](https://fidoalliance.org/fido2-2/fido2-web-authentication-webauthn) authentication flows in a [relying party](https://www.w3.org/TR/webauthn-2/#webauthn-relying-party) WebAuthn server implementation without requiring a browser or an actual authenticator.
 
 Check the [test](test/webauthn_test.go) for a working example on how to use this library.
 
