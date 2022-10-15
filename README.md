@@ -51,10 +51,10 @@ if err != nil {
 
 // Creates an attestation response that we can send to the relying party as if it came from
 // an actual browser and authenticator.
-attestationOptions := virtualwebauthn.CreateAttestationResponse(rp, authenticator, credential, *parsedAttestationOptions)
+attestationResponse := virtualwebauthn.CreateAttestationResponse(rp, authenticator, credential, *parsedAttestationOptions)
 ```
 
-We can now go back to the relying party with the `attestationOptions` and finish the register flow:
+We can now go back to the relying party with the `attestationResponse` and finish the register flow:
 
 ```go
 // Finish the register flow by sending the attestation response. Again the server and
