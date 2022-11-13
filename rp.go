@@ -1,7 +1,7 @@
 package virtualwebauthn
 
 type RelyingParty struct {
-	Name   string `json:"name"`
 	ID     string `json:"id"`
+	Name   string `json:"name"`
 	Origin string `json:"origin"`
 }

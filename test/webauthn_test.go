@@ -43,6 +43,15 @@ func TestWebauthn(t *testing.T) {
 	isExcluded := ec2Cred.IsExcludedForAttestation(*attestationOptions)
 	require.False(t, isExcluded)
 
+	// Ensure that the Relying Party details match
+	require.Equal(t, WebauthnDomain, attestationOptions.RelyingPartyID)
+	require.Equal(t, WebauthnDisplayName, attestationOptions.RelyingPartyName)
+
+	// Ensure that the user details match
+	require.Equal(t, UserID, attestationOptions.UserID)
+	require.Equal(t, UserName, attestationOptions.UserName)
+	require.Equal(t, UserDisplayName, attestationOptions.UserDisplayName)
+
 	// Creates an attestation response that we can send to the relying party as if it came from
 	// an actual browser and authenticator.
 	attestationResponse := virtualwebauthn.CreateAttestationResponse(rp, authenticator, ec2Cred, *attestationOptions)
@@ -71,6 +80,9 @@ func TestWebauthn(t *testing.T) {
 	foundCredential := authenticator.FindAllowedCredential(*assertionOptions)
 	require.NotNil(t, foundCredential)
 	require.Equal(t, ec2Cred, *foundCredential)
+
+	// Ensure that the Relying Party details match
+	require.Equal(t, WebauthnDomain, assertionOptions.RelyingPartyID)
 
 	// Creates an assertion response that we can send to the relying party to finish the login as if
 	// it came from an actual browser and authenticator.
@@ -169,8 +181,8 @@ func newWebauthnUser() *webauthn.User {
 }
 
 var webauthnConfig = &webauthn.Config{
-	RPID:             WebauthnDisplayName,
-	RPName:           WebauthnDomain,
+	RPID:             WebauthnDomain,
+	RPName:           WebauthnDisplayName,
 	Timeout:          uint64(60000),
 	ChallengeLength:  32,
 	ResidentKey:      webauthn.ResidentKeyDiscouraged,
