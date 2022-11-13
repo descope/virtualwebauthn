@@ -13,6 +13,7 @@ import (
 type AssertionOptions struct {
 	Challenge        []byte   `json:"challenge,omitempty"`
 	AllowCredentials []string `json:"allowCredentials,omitempty"`
+	RelyingPartyID   string   `json:"rpId,omitempty"`
 }
 
 func ParseAssertionOptions(str string) (assertionOptions *AssertionOptions, err error) {
@@ -25,7 +26,9 @@ func ParseAssertionOptions(str string) (assertionOptions *AssertionOptions, err 
 		values = *values.PublicKey
 	}
 
-	assertionOptions = &AssertionOptions{}
+	assertionOptions = &AssertionOptions{
+		RelyingPartyID: values.RelyingPartyID,
+	}
 
 	if len(values.Challenge) == 0 {
 		return nil, errors.New("failed to find challenge in options")
@@ -113,12 +116,13 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 type assertionOptionsValues struct {
 	Challenge        string                            `json:"challenge,omitempty"`
 	AllowCredentials []assertionOptionsAllowCredential `json:"allowCredentials,omitempty"`
+	RelyingPartyID   string                            `json:"rpId,omitempty"`
 	PublicKey        *assertionOptionsValues           `json:"publicKey,omitempty"`
 }
 
 type assertionOptionsAllowCredential struct {
-	Type string `json:"type,omitempty"`
-	ID   string `json:"id,omitempty"`
+	Type string `json:"type"`
+	ID   string `json:"id"`
 }
 
 type assertionResponse struct {

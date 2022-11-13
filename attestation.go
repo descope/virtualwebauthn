@@ -13,6 +13,11 @@ import (
 type AttestationOptions struct {
 	Challenge          []byte   `json:"challenge,omitempty"`
 	ExcludeCredentials []string `json:"excludeCredentials,omitempty"`
+	RelyingPartyID     string   `json:"rpId,omitempty"`
+	RelyingPartyName   string   `json:"rpName,omitempty"`
+	UserID             string   `json:"user,omitempty"`
+	UserName           string   `json:"userName,omitempty"`
+	UserDisplayName    string   `json:"userDisplayName,omitempty"`
 }
 
 func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions, err error) {
@@ -25,7 +30,19 @@ func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions
 		values = *values.PublicKey
 	}
 
-	attestationOptions = &AttestationOptions{}
+	attestationOptions = &AttestationOptions{
+		RelyingPartyID:   values.RP.ID,
+		RelyingPartyName: values.RP.Name,
+	}
+
+	decodedUserID, err := base64.RawURLEncoding.DecodeString(values.User.ID)
+	if err != nil {
+		return nil, errors.New("failed to decode user id in response")
+	}
+
+	attestationOptions.UserID = string(decodedUserID)
+	attestationOptions.UserName = values.User.Name
+	attestationOptions.UserDisplayName = values.User.DisplayName
 
 	if len(values.Challenge) == 0 {
 		return nil, errors.New("failed to find challenge in response")
@@ -134,12 +151,25 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 type attestationOptionsValues struct {
 	Challenge          string                                `json:"challenge,omitempty"`
 	ExcludeCredentials []attestationOptionsExcludeCredential `json:"excludeCredentials,omitempty"`
+	RP                 attestationOptionsRelyingParty        `json:"rp,omitempty"`
+	User               attestationOptionsUser                `json:"user,omitempty"`
 	PublicKey          *attestationOptionsValues             `json:"publicKey,omitempty"`
 }
 
+type attestationOptionsRelyingParty struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type attestationOptionsUser struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+}
+
 type attestationOptionsExcludeCredential struct {
-	Type string `json:"type,omitempty"`
-	ID   string `json:"id,omitempty"`
+	Type string `json:"type"`
+	ID   string `json:"id"`
 }
 
 type attestationStatement struct {
