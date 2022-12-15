@@ -1,6 +1,7 @@
 package virtualwebauthn
 
 type AuthenticatorOptions struct {
+	UserHandle      []byte
 	UserNotPresent  bool
 	UserNotVerified bool
 }
