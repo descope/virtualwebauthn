@@ -61,6 +61,9 @@ func TestWebauthn(t *testing.T) {
 	// credential object for later usage.
 	webauthnEC2Credential := finishWebauthnRegister(t, attestation, attestationResponse)
 
+	// Add the userID to the mock authenticator so it can return it in assertion responses.
+	authenticator.Options.UserHandle = []byte(UserID)
+
 	// Add the EC2 credential to the mock authenticator
 	authenticator.AddCredential(ec2Cred)
 

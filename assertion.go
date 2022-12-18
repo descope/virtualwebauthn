@@ -39,9 +39,6 @@ func ParseAssertionOptions(str string) (assertionOptions *AssertionOptions, err 
 	}
 	assertionOptions.Challenge = challenge
 
-	if len(values.AllowCredentials) == 0 {
-		panic("resident key flow not supported yet")
-	}
 	for _, cred := range values.AllowCredentials {
 		if len(cred.ID) == 0 {
 			return nil, errors.New("allowed credential has an empty id")
@@ -93,7 +90,7 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 		AuthenticatorData: authDataEncoded,
 		ClientDataJSON:    clientDataJSONEncoded,
 		Signature:         base64.RawURLEncoding.EncodeToString(sig),
-		UserHandle:        "", // userhandle not supported yet
+		UserHandle:        base64.RawURLEncoding.EncodeToString(auth.Options.UserHandle),
 	}
 
 	assertionResult := assertionResult{
