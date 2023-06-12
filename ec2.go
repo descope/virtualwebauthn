@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/x509"
 )
 
 const (
@@ -31,6 +32,26 @@ func newEC2SigningKey() *ec2SigningKey {
 	}
 	data := marshalCbor(info)
 	return &ec2SigningKey{Key: key, Data: data}
+}
+
+func importPKCS8EC2SigningKey(importedKey []byte) *ec2SigningKey {
+
+	privateKeyAny, err := x509.ParsePKCS8PrivateKey(importedKey)
+	if err != nil {
+		panic("failed to parse PKCS8 ECDSA Private Key")
+	}
+
+	privateKey := privateKeyAny.(*ecdsa.PrivateKey)
+
+	info := ec2KeyInfo{
+		Type:      ec2Type,
+		Algorithm: ec2SHA256Algo,
+		Curve:     ec2P256Curve,
+		X:         privateKey.X.Bytes(),
+		Y:         privateKey.Y.Bytes(),
+	}
+	data := marshalCbor(info)
+	return &ec2SigningKey{Key: privateKey, Data: data}
 }
 
 func (k *ec2SigningKey) KeyData() []byte {
