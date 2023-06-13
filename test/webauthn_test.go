@@ -123,7 +123,7 @@ func finishWebauthnRegister(t *testing.T, attestation *WebauthnAttestation, resp
 	_, _, err = webauthn.VerifyAttestation(parsedAttestation, &webauthn.AttestationExpectedData{
 		Origin:           WebauthnOrigin,
 		RPID:             WebauthnDomain,
-		CredentialAlgs:   []int{webauthn.COSEAlgES256},
+		CredentialAlgs:   []int{webauthn.COSEAlgES256, webauthn.COSEAlgRS256},
 		Challenge:        base64.RawURLEncoding.EncodeToString(attestation.Challenge),
 		UserVerification: webauthn.UserVerificationPreferred,
 	})
