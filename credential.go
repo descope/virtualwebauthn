@@ -19,12 +19,11 @@ func NewCredential(keyType KeyType) Credential {
 		panic("Invalid credential key type")
 	}
 
-	return cred
+	return createCredential(key)
 }
 
 func NewCredentialWithImportedKey(keyType KeyType, PKCS8PrivateKey []byte) Credential {
 	key := Key{}
-	cred.ID = randomBytes(32)
 	if keyType == KeyTypeEC2 {
 		key = Key{Type: keyType, SigningKey: importPKCS8EC2SigningKey(PKCS8PrivateKey)}
 	} else if keyType == KeyTypeRSA {
@@ -32,7 +31,7 @@ func NewCredentialWithImportedKey(keyType KeyType, PKCS8PrivateKey []byte) Crede
 	} else {
 		panic("Invalid credential key type")
 	}
-	return createCredential(keyType, ket)
+	return createCredential(key)
 }
 
 func (c *Credential) IsExcludedForAttestation(options AttestationOptions) bool {
