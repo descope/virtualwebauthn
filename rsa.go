@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
 )
 
 const (
@@ -30,6 +31,24 @@ func newRSASigningKey() *rsaSigningKey {
 	}
 	data := marshalCbor(info)
 	return &rsaSigningKey{Key: key, Data: data}
+}
+
+func importPKCS8RSASigningKey(importedKey []byte) *rsaSigningKey {
+	privateKeyAny, err := x509.ParsePKCS8PrivateKey(importedKey)
+	if err != nil {
+		panic("failed to parse PKCS8 RSA Private Key")
+	}
+
+	privateKey := privateKeyAny.(*rsa.PrivateKey)
+
+	info := rasKeyInfo{
+		Type:      rsaType,
+		Algorithm: rsaSHA256Algo,
+		Modulus:   privateKey.N.Bytes(),
+		Exponent:  bigEndianBytes(privateKey.E, 3),
+	}
+	data := marshalCbor(info)
+	return &rsaSigningKey{Key: privateKey, Data: data}
 }
 
 func (k *rsaSigningKey) KeyData() []byte {
