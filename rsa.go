@@ -23,6 +23,22 @@ func newRSASigningKey() *rsaSigningKey {
 	if err != nil {
 		panic("failed to generate signing key")
 	}
+	return newRSASigningKeyWithPrivateKey(key)
+}
+
+func importRSASigningKey(keyBytes []byte) *rsaSigningKey {
+	parsed, err := x509.ParsePKCS8PrivateKey(keyBytes)
+	if err != nil {
+		panic("failed to parse PKCS8 RSA Private Key")
+	}
+	key, ok := parsed.(*rsa.PrivateKey)
+	if !ok {
+		panic("expected RSA key in imported data")
+	}
+	return newRSASigningKeyWithPrivateKey(key)
+}
+
+func newRSASigningKeyWithPrivateKey(key *rsa.PrivateKey) *rsaSigningKey {
 	info := rasKeyInfo{
 		Type:      rsaType,
 		Algorithm: rsaSHA256Algo,
@@ -31,24 +47,6 @@ func newRSASigningKey() *rsaSigningKey {
 	}
 	data := marshalCbor(info)
 	return &rsaSigningKey{Key: key, Data: data}
-}
-
-func importPKCS8RSASigningKey(importedKey []byte) *rsaSigningKey {
-	privateKeyAny, err := x509.ParsePKCS8PrivateKey(importedKey)
-	if err != nil {
-		panic("failed to parse PKCS8 RSA Private Key")
-	}
-
-	privateKey := privateKeyAny.(*rsa.PrivateKey)
-
-	info := rasKeyInfo{
-		Type:      rsaType,
-		Algorithm: rsaSHA256Algo,
-		Modulus:   privateKey.N.Bytes(),
-		Exponent:  bigEndianBytes(privateKey.E, 3),
-	}
-	data := marshalCbor(info)
-	return &rsaSigningKey{Key: privateKey, Data: data}
 }
 
 func (k *rsaSigningKey) KeyData() []byte {

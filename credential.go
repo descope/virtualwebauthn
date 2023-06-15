@@ -9,29 +9,18 @@ type Credential struct {
 }
 
 func NewCredential(keyType KeyType) Credential {
-
-	key := Key{}
-	if keyType == KeyTypeEC2 {
-		key = Key{Type: keyType, SigningKey: newEC2SigningKey()}
-	} else if keyType == KeyTypeRSA {
-		key = Key{Type: keyType, SigningKey: newRSASigningKey()}
-	} else {
-		panic("Invalid credential key type")
-	}
-
-	return createCredential(key)
+	return newCredential(keyType.newKey())
 }
 
-func NewCredentialWithImportedKey(keyType KeyType, PKCS8PrivateKey []byte) Credential {
-	key := Key{}
-	if keyType == KeyTypeEC2 {
-		key = Key{Type: keyType, SigningKey: importPKCS8EC2SigningKey(PKCS8PrivateKey)}
-	} else if keyType == KeyTypeRSA {
-		key = Key{Type: keyType, SigningKey: importPKCS8RSASigningKey(PKCS8PrivateKey)}
-	} else {
-		panic("Invalid credential key type")
-	}
-	return createCredential(key)
+func NewCredentialWithImportedKey(keyType KeyType, keyBytes []byte) Credential {
+	return newCredential(keyType.importKey(keyBytes))
+}
+
+func newCredential(key Key) Credential {
+	cred := Credential{}
+	cred.ID = randomBytes(32)
+	cred.Key = key
+	return cred
 }
 
 func (c *Credential) IsExcludedForAttestation(options AttestationOptions) bool {
@@ -52,11 +41,4 @@ func (c *Credential) IsAllowedForAssertion(options AssertionOptions) bool {
 		}
 	}
 	return false
-}
-
-func createCredential(key Key) Credential {
-	cred := Credential{}
-	cred.ID = randomBytes(32)
-	cred.Key = key
-	return cred
 }
