@@ -57,6 +57,10 @@ func (k *rsaSigningKey) Sign(digest []byte) (signature []byte, err error) {
 	return rsa.SignPKCS1v15(rand.Reader, k.Key, crypto.SHA256, digest)
 }
 
+func (k *rsaSigningKey) ExportToPKCS8Key() (PKCS8Key []byte, err error) {
+	return x509.MarshalPKCS8PrivateKey(k.Key)
+}
+
 type rasKeyInfo struct {
 	Type      int64  `cbor:"1,keyasint"`
 	Algorithm int64  `cbor:"3,keyasint"`

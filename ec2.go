@@ -58,6 +58,10 @@ func (k *ec2SigningKey) Sign(digest []byte) (signature []byte, err error) {
 	return k.Key.Sign(rand.Reader, digest, nil)
 }
 
+func (k *ec2SigningKey) ExportToPKCS8Key() (PKCS8Key []byte, err error) {
+	return x509.MarshalPKCS8PrivateKey(k.Key)
+}
+
 type ec2KeyInfo struct {
 	Type      int64  `cbor:"1,keyasint"`
 	Algorithm int64  `cbor:"3,keyasint"`

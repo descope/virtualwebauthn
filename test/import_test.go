@@ -47,21 +47,45 @@ const rsaKey = `
 	1eaa3c0638d115432c714c2b3b33c8f9f028`
 
 func TestImportedEC2Key(t *testing.T) {
-	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(ec2Key, "")
-	keyBytes, err := hex.DecodeString(keyString)
-	require.NoError(t, err)
 
-	cred := virtualwebauthn.NewCredentialWithImportedKey(virtualwebauthn.KeyTypeEC2, keyBytes)
-	testImportedCredential(t, cred)
+	portableCred := createEC2PortableCredential(t)
+	testImportedCredential(t, portableCred.ToCredential())
 }
 
 func TestImportedRSAKey(t *testing.T) {
+	portableCred := createRSAPortableCredential(t)
+	testImportedCredential(t, portableCred.ToCredential())
+}
+
+func createRSAPortableCredential(t *testing.T) virtualwebauthn.PortableCredential {
 	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(rsaKey, "")
 	keyBytes, err := hex.DecodeString(keyString)
 	require.NoError(t, err)
 
-	cred := virtualwebauthn.NewCredentialWithImportedKey(virtualwebauthn.KeyTypeRSA, keyBytes)
-	testImportedCredential(t, cred)
+	portableCred := virtualwebauthn.PortableCredential{
+		ID:       []byte("My Credential ID"),
+		PKCS8Key: keyBytes,
+		KeyType:  virtualwebauthn.KeyTypeRSA,
+		Counter:  0,
+	}
+
+	return portableCred
+}
+
+func createEC2PortableCredential(t *testing.T) virtualwebauthn.PortableCredential {
+	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(ec2Key, "")
+	keyBytes, err := hex.DecodeString(keyString)
+	require.NoError(t, err)
+
+	portableCred := virtualwebauthn.PortableCredential{
+		ID:       []byte("My Credential ID"),
+		PKCS8Key: keyBytes,
+		KeyType:  virtualwebauthn.KeyTypeEC2,
+		Counter:  0,
+	}
+
+	return portableCred
+
 }
 
 func testImportedCredential(t *testing.T, cred virtualwebauthn.Credential) {
