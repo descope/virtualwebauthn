@@ -14,51 +14,51 @@ const (
 )
 
 type rsaSigningKey struct {
-	Key  *rsa.PrivateKey `json:"key"`
-	Data []byte          `json:"data"`
+	privateKey      *rsa.PrivateKey
+	attestationData []byte
 }
 
-func newRSASigningKey() *rsaSigningKey {
-	key, err := rsa.GenerateKey(rand.Reader, rsaSize)
+func newRSASigningKey() (*rsaSigningKey, []byte) {
+	privateKey, err := rsa.GenerateKey(rand.Reader, rsaSize)
 	if err != nil {
-		panic("failed to generate signing key")
+		panic("failed to generate private key")
 	}
-	return newRSASigningKeyWithPrivateKey(key)
+	keyData, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		panic("failed to export generated private key")
+	}
+	return newRSASigningKeyWithPrivateKey(privateKey), keyData
 }
 
-func importRSASigningKey(keyBytes []byte) *rsaSigningKey {
-	parsed, err := x509.ParsePKCS8PrivateKey(keyBytes)
+func importRSASigningKey(keyData []byte) *rsaSigningKey {
+	parsed, err := x509.ParsePKCS8PrivateKey(keyData)
 	if err != nil {
-		panic("failed to parse PKCS8 RSA Private Key")
+		panic("failed to parse PKCS8 RSA private Key")
 	}
-	key, ok := parsed.(*rsa.PrivateKey)
+	privateKey, ok := parsed.(*rsa.PrivateKey)
 	if !ok {
 		panic("expected RSA key in imported data")
 	}
-	return newRSASigningKeyWithPrivateKey(key)
+	return newRSASigningKeyWithPrivateKey(privateKey)
 }
 
-func newRSASigningKeyWithPrivateKey(key *rsa.PrivateKey) *rsaSigningKey {
+func newRSASigningKeyWithPrivateKey(privateKey *rsa.PrivateKey) *rsaSigningKey {
 	info := rasKeyInfo{
 		Type:      rsaType,
 		Algorithm: rsaSHA256Algo,
-		Modulus:   key.N.Bytes(),
-		Exponent:  bigEndianBytes(key.E, 3),
+		Modulus:   privateKey.N.Bytes(),
+		Exponent:  bigEndianBytes(privateKey.E, 3),
 	}
-	data := marshalCbor(info)
-	return &rsaSigningKey{Key: key, Data: data}
+	attestationData := marshalCbor(info)
+	return &rsaSigningKey{privateKey: privateKey, attestationData: attestationData}
 }
 
-func (k *rsaSigningKey) KeyData() []byte {
-	return k.Data
+func (k *rsaSigningKey) AttestationData() []byte {
+	return k.attestationData
 }
 
 func (k *rsaSigningKey) Sign(digest []byte) (signature []byte, err error) {
-	return rsa.SignPKCS1v15(rand.Reader, k.Key, crypto.SHA256, digest)
-}
-
-func (k *rsaSigningKey) ExportToPKCS8Key() (PKCS8Key []byte, err error) {
-	return x509.MarshalPKCS8PrivateKey(k.Key)
+	return rsa.SignPKCS1v15(rand.Reader, k.privateKey, crypto.SHA256, digest)
 }
 
 type rasKeyInfo struct {

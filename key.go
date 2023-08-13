@@ -1,30 +1,57 @@
 package virtualwebauthn
 
 type Key struct {
-	Type       KeyType    `json:"type"`
-	SigningKey SigningKey `json:"signingKey"`
+	Type KeyType `json:"type"`
+	Data []byte  `json:"data"`
+	signingKey
 }
 
-type KeyType int
-
-const (
-	KeyTypeEC2 KeyType = iota
-	KeyTypeRSA
-)
-
-type SigningKey interface {
-	KeyData() []byte
-	Sign(digest []byte) (signature []byte, err error)
-	ExportToPKCS8Key() (PKCS8Key []byte, err error)
+func (k *Key) AttestationData() []byte {
+	k.ensureSigningKey()
+	return k.signingKey.AttestationData()
 }
 
-func (keyType KeyType) newKey() Key {
-	switch keyType {
+func (k *Key) Sign(digest []byte) (signature []byte, err error) {
+	k.ensureSigningKey()
+	return k.signingKey.Sign(digest)
+}
+
+func (k *Key) ensureSigningKey() {
+	switch k.Type {
 	case KeyTypeEC2:
-		return Key{Type: keyType, SigningKey: newEC2SigningKey()}
+		k.signingKey = importEC2SigningKey(k.Data)
 	case KeyTypeRSA:
-		return Key{Type: keyType, SigningKey: newRSASigningKey()}
+		k.signingKey = importRSASigningKey(k.Data)
 	default:
 		panic("invalid key type")
 	}
+}
+
+type KeyType string
+
+const (
+	KeyTypeEC2 KeyType = "ec2"
+	KeyTypeRSA KeyType = "rsa"
+)
+
+func (keyType KeyType) newKey() *Key {
+	key := &Key{Type: keyType}
+	switch keyType {
+	case KeyTypeEC2:
+		key.signingKey, key.Data = newEC2SigningKey()
+	case KeyTypeRSA:
+		key.signingKey, key.Data = newRSASigningKey()
+	default:
+		panic("invalid key type")
+	}
+	return key
+}
+
+func (keyType KeyType) importKey(keyData []byte) *Key {
+	return &Key{Type: keyType, Data: keyData}
+}
+
+type signingKey interface {
+	AttestationData() []byte
+	Sign(digest []byte) (signature []byte, err error)
 }

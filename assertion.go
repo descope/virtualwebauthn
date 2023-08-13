@@ -79,7 +79,7 @@ func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credentia
 	hasher.Write(verifyData)
 	digest := hasher.Sum(nil)
 
-	sig, err := cred.Key.SigningKey.Sign(digest)
+	sig, err := cred.Key.Sign(digest)
 	if err != nil {
 		panic("failed to sign digest")
 	}
