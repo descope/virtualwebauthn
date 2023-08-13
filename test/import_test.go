@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/descope/virtualwebauthn"
-	_ "github.com/fxamacker/webauthn/packed"
 	"github.com/stretchr/testify/require"
 )
 
@@ -47,69 +46,19 @@ const rsaKey = `
 	1eaa3c0638d115432c714c2b3b33c8f9f028`
 
 func TestImportedEC2Key(t *testing.T) {
-
-	portableCred := createEC2PortableCredential(t)
-	testImportedCredential(t, portableCred.ToCredential())
-}
-
-func TestImportedRSAKey(t *testing.T) {
-	portableCred := createRSAPortableCredential(t)
-	testImportedCredential(t, portableCred.ToCredential())
-}
-
-func createRSAPortableCredential(t *testing.T) virtualwebauthn.PortableCredential {
-	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(rsaKey, "")
-	keyBytes, err := hex.DecodeString(keyString)
-	require.NoError(t, err)
-
-	portableCred := virtualwebauthn.PortableCredential{
-		ID:       []byte("My Credential ID"),
-		PKCS8Key: keyBytes,
-		KeyType:  virtualwebauthn.KeyTypeRSA,
-		Counter:  0,
-	}
-
-	return portableCred
-}
-
-func createEC2PortableCredential(t *testing.T) virtualwebauthn.PortableCredential {
 	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(ec2Key, "")
 	keyBytes, err := hex.DecodeString(keyString)
 	require.NoError(t, err)
 
-	portableCred := virtualwebauthn.PortableCredential{
-		ID:       []byte("My Credential ID"),
-		PKCS8Key: keyBytes,
-		KeyType:  virtualwebauthn.KeyTypeEC2,
-		Counter:  0,
-	}
-
-	return portableCred
-
+	cred := virtualwebauthn.NewCredentialWithImportedKey(virtualwebauthn.KeyTypeEC2, keyBytes)
+	testCredential(t, cred)
 }
 
-func testImportedCredential(t *testing.T, cred virtualwebauthn.Credential) {
-	rp := virtualwebauthn.RelyingParty{Name: WebauthnDisplayName, ID: WebauthnDomain, Origin: WebauthnOrigin}
-	authenticator := virtualwebauthn.NewAuthenticator()
-
-	attestation := startWebauthnRegister(t)
-	attestationOptions, err := virtualwebauthn.ParseAttestationOptions(attestation.Options)
+func TestImportedRSAKey(t *testing.T) {
+	keyString := regexp.MustCompile(`\s+`).ReplaceAllString(rsaKey, "")
+	keyBytes, err := hex.DecodeString(keyString)
 	require.NoError(t, err)
 
-	attestationResponse := virtualwebauthn.CreateAttestationResponse(rp, authenticator, cred, *attestationOptions)
-	webauthnCredential := finishWebauthnRegister(t, attestation, attestationResponse)
-
-	authenticator.Options.UserHandle = []byte(UserID)
-	authenticator.AddCredential(cred)
-
-	assertion := startWebauthnLogin(t, webauthnCredential, cred.ID)
-	assertionOptions, err := virtualwebauthn.ParseAssertionOptions(assertion.Options)
-	require.NoError(t, err)
-
-	foundCredential := authenticator.FindAllowedCredential(*assertionOptions)
-	require.NotNil(t, foundCredential)
-	require.Equal(t, cred, *foundCredential)
-
-	assertionResponse := virtualwebauthn.CreateAssertionResponse(rp, authenticator, cred, *assertionOptions)
-	finishWebauthnLogin(t, assertion, assertionResponse)
+	cred := virtualwebauthn.NewCredentialWithImportedKey(virtualwebauthn.KeyTypeRSA, keyBytes)
+	testCredential(t, cred)
 }

@@ -21,11 +21,20 @@ const (
 	UserDisplayName     = "John Appleseed"
 )
 
-func TestWebauthn(t *testing.T) {
+func TestEC2Key(t *testing.T) {
+	cred := virtualwebauthn.NewCredential(virtualwebauthn.KeyTypeEC2)
+	testCredential(t, cred)
+}
+
+func TestRSAKey(t *testing.T) {
+	cred := virtualwebauthn.NewCredential(virtualwebauthn.KeyTypeRSA)
+	testCredential(t, cred)
+}
+
+func testCredential(t *testing.T, cred virtualwebauthn.Credential) {
 	// Create a mock relying party, mock authenticator and a mock EC2 credential
 	rp := virtualwebauthn.RelyingParty{Name: WebauthnDisplayName, ID: WebauthnDomain, Origin: WebauthnOrigin}
 	authenticator := virtualwebauthn.NewAuthenticator()
-	ec2Cred := virtualwebauthn.NewCredential(virtualwebauthn.KeyTypeEC2)
 
 	// Register
 
@@ -40,7 +49,7 @@ func TestWebauthn(t *testing.T) {
 	require.NotNil(t, attestationOptions)
 
 	// Ensure that the mock credential isn't excluded by the attestation options
-	isExcluded := ec2Cred.IsExcludedForAttestation(*attestationOptions)
+	isExcluded := cred.IsExcludedForAttestation(*attestationOptions)
 	require.False(t, isExcluded)
 
 	// Ensure that the Relying Party details match
@@ -54,7 +63,7 @@ func TestWebauthn(t *testing.T) {
 
 	// Creates an attestation response that we can send to the relying party as if it came from
 	// an actual browser and authenticator.
-	attestationResponse := virtualwebauthn.CreateAttestationResponse(rp, authenticator, ec2Cred, *attestationOptions)
+	attestationResponse := virtualwebauthn.CreateAttestationResponse(rp, authenticator, cred, *attestationOptions)
 
 	// Finish the register operation by sending the attestation response. An actual relying party
 	// would keep all the data related to the user, but in this test we need to hold onto the
@@ -65,13 +74,13 @@ func TestWebauthn(t *testing.T) {
 	authenticator.Options.UserHandle = []byte(UserID)
 
 	// Add the EC2 credential to the mock authenticator
-	authenticator.AddCredential(ec2Cred)
+	authenticator.AddCredential(cred)
 
 	// Login
 
 	// Start an assertion request with the relying party to perform a login. As above, this would
 	// typically call to an actual server or some other relying party implementation.
-	assertion := startWebauthnLogin(t, webauthnEC2Credential, ec2Cred.ID)
+	assertion := startWebauthnLogin(t, webauthnEC2Credential, cred.ID)
 
 	// Parses the attestation options we got from the relying party to ensure they're valid
 	assertionOptions, err := virtualwebauthn.ParseAssertionOptions(assertion.Options)
@@ -82,14 +91,14 @@ func TestWebauthn(t *testing.T) {
 	// options specifically, and ensure it's the one we created above
 	foundCredential := authenticator.FindAllowedCredential(*assertionOptions)
 	require.NotNil(t, foundCredential)
-	require.Equal(t, ec2Cred, *foundCredential)
+	require.Equal(t, cred, *foundCredential)
 
 	// Ensure that the Relying Party details match
 	require.Equal(t, WebauthnDomain, assertionOptions.RelyingPartyID)
 
 	// Creates an assertion response that we can send to the relying party to finish the login as if
 	// it came from an actual browser and authenticator.
-	assertionResponse := virtualwebauthn.CreateAssertionResponse(rp, authenticator, ec2Cred, *assertionOptions)
+	assertionResponse := virtualwebauthn.CreateAssertionResponse(rp, authenticator, cred, *assertionOptions)
 	require.NotEmpty(t, assertionResponse)
 
 	// Finish the login operation by sending the assertion response.
