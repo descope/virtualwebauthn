@@ -77,13 +77,13 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	}
 	clientDataJSONEncoded := base64.RawURLEncoding.EncodeToString(clientDataJSON)
 
-	keyDataBytes := cred.Key.SigningKey.KeyData()
+	publicKeyData := cred.Key.AttestationData()
 
 	credData := []byte{}
 	credData = append(credData, auth.Aaguid[:]...)
 	credData = append(credData, bigEndianBytes(len(cred.ID), 2)...)
 	credData = append(credData, cred.ID...)
-	credData = append(credData, keyDataBytes...)
+	credData = append(credData, publicKeyData...)
 
 	rpIDHash := sha256.Sum256([]byte(rp.ID))
 	flags := authenticatorDataFlags(!auth.Options.UserNotPresent, !auth.Options.UserNotVerified, true, false)
@@ -101,7 +101,7 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	hasher.Write(verifyData)
 	digest := hasher.Sum(nil)
 
-	sig, err := cred.Key.SigningKey.Sign(digest)
+	sig, err := cred.Key.Sign(digest)
 	if err != nil {
 		panic("failed to sign digest")
 	}

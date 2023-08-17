@@ -14,52 +14,52 @@ const (
 )
 
 type ec2SigningKey struct {
-	Key  *ecdsa.PrivateKey `json:"key"`
-	Data []byte            `json:"data"`
+	privateKey      *ecdsa.PrivateKey
+	attestationData []byte
 }
 
-func newEC2SigningKey() *ec2SigningKey {
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+func newEC2SigningKey() (*ec2SigningKey, []byte) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
-		panic("failed to generate signing key")
+		panic("failed to generate private key")
 	}
-	return newEC2SigningKeyWithPrivateKey(key)
+	keyData, err := x509.MarshalPKCS8PrivateKey(privateKey)
+	if err != nil {
+		panic("failed to export generated private key")
+	}
+	return newEC2SigningKeyWithPrivateKey(privateKey), keyData
 }
 
-func importEC2SigningKey(keyBytes []byte) *ec2SigningKey {
-	parsed, err := x509.ParsePKCS8PrivateKey(keyBytes)
+func importEC2SigningKey(keyData []byte) *ec2SigningKey {
+	parsed, err := x509.ParsePKCS8PrivateKey(keyData)
 	if err != nil {
-		panic("failed to parse PKCS8 ECDSA Private Key")
+		panic("failed to parse PKCS8 ECDSA private Key")
 	}
-	key, ok := parsed.(*ecdsa.PrivateKey)
+	privateKey, ok := parsed.(*ecdsa.PrivateKey)
 	if !ok {
 		panic("expected EC2 key in imported data")
 	}
-	return newEC2SigningKeyWithPrivateKey(key)
+	return newEC2SigningKeyWithPrivateKey(privateKey)
 }
 
-func newEC2SigningKeyWithPrivateKey(key *ecdsa.PrivateKey) *ec2SigningKey {
+func newEC2SigningKeyWithPrivateKey(privateKey *ecdsa.PrivateKey) *ec2SigningKey {
 	info := ec2KeyInfo{
 		Type:      ec2Type,
 		Algorithm: ec2SHA256Algo,
 		Curve:     ec2P256Curve,
-		X:         key.X.Bytes(),
-		Y:         key.Y.Bytes(),
+		X:         privateKey.X.Bytes(),
+		Y:         privateKey.Y.Bytes(),
 	}
-	data := marshalCbor(info)
-	return &ec2SigningKey{Key: key, Data: data}
+	attestationData := marshalCbor(info)
+	return &ec2SigningKey{privateKey: privateKey, attestationData: attestationData}
 }
 
-func (k *ec2SigningKey) KeyData() []byte {
-	return k.Data
+func (k *ec2SigningKey) AttestationData() []byte {
+	return k.attestationData
 }
 
 func (k *ec2SigningKey) Sign(digest []byte) (signature []byte, err error) {
-	return k.Key.Sign(rand.Reader, digest, nil)
-}
-
-func (k *ec2SigningKey) ExportToPKCS8Key() (PKCS8Key []byte, err error) {
-	return x509.MarshalPKCS8PrivateKey(k.Key)
+	return k.privateKey.Sign(rand.Reader, digest, nil)
 }
 
 type ec2KeyInfo struct {
