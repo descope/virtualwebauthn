@@ -3,7 +3,7 @@ module github.com/descope/virtualwebauthn
 go 1.19
 
 require (
-	github.com/fxamacker/cbor/v2 v2.4.0
+	github.com/fxamacker/cbor/v2 v2.5.0
 	github.com/fxamacker/webauthn v0.6.1
 	github.com/stretchr/testify v1.8.4
 )
