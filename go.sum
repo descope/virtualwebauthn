@@ -5,6 +5,8 @@ github.com/fxamacker/cbor/v2 v2.5.0 h1:oHsG0V/Q6E/wqTS2O1Cozzsy69nqCiguo5Q1a1ADi
 github.com/fxamacker/cbor/v2 v2.5.0/go.mod h1:TA1xS00nchWmaBnEIxPSE5oHLuJBAVvqrtAnWBwBCVo=
 github.com/fxamacker/webauthn v0.6.1 h1:Vh5Kfuul05zCffJN8PGk1aqeTIw14syrorcwDMeVlN0=
 github.com/fxamacker/webauthn v0.6.1/go.mod h1:dOZK7yO04AnMvkmC+HLP6YO32doyu+fRPQlY0wD4Lb0=
+github.com/go-webauthn/webauthn v0.8.6 h1:bKMtL1qzd2WTFkf1mFTVbreYrwn7dsYmEPjTq6QN90E=
+github.com/go-webauthn/webauthn v0.8.6/go.mod h1:emwVLMCI5yx9evTTvr0r+aOZCdWJqMfbRhF0MufyUog=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
