@@ -5,14 +5,14 @@ go 1.19
 require (
 	github.com/fxamacker/cbor/v2 v2.5.0
 	github.com/fxamacker/webauthn v0.6.1
-	github.com/go-webauthn/webauthn v0.9.3
+	github.com/go-webauthn/webauthn v0.9.4
 	github.com/stretchr/testify v1.8.4
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-webauthn/x v0.1.5 // indirect
-	github.com/golang-jwt/jwt/v5 v5.1.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
