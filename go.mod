@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/fxamacker/cbor/v2 v2.5.0
 	github.com/fxamacker/webauthn v0.6.1
-	github.com/go-webauthn/webauthn v0.9.2
+	github.com/go-webauthn/webauthn v0.9.3
 	github.com/stretchr/testify v1.8.4
 )
 
