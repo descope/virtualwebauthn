@@ -43,7 +43,7 @@ func importRSASigningKey(keyData []byte) *rsaSigningKey {
 }
 
 func newRSASigningKeyWithPrivateKey(privateKey *rsa.PrivateKey) *rsaSigningKey {
-	info := rasKeyInfo{
+	info := rsaKeyInfo{
 		Type:      rsaType,
 		Algorithm: rsaSHA256Algo,
 		Modulus:   privateKey.N.Bytes(),
@@ -61,7 +61,7 @@ func (k *rsaSigningKey) Sign(digest []byte) (signature []byte, err error) {
 	return rsa.SignPKCS1v15(rand.Reader, k.privateKey, crypto.SHA256, digest)
 }
 
-type rasKeyInfo struct {
+type rsaKeyInfo struct {
 	Type      int64  `cbor:"1,keyasint"`
 	Algorithm int64  `cbor:"3,keyasint"`
 	Modulus   []byte `cbor:"-1,keyasint"`
