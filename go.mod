@@ -8,7 +8,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.6.0
 	github.com/fxamacker/webauthn v0.6.1
 	github.com/go-webauthn/webauthn v0.10.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
