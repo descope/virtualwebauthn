@@ -42,7 +42,7 @@ func bigEndianBytes[T interface{ int | uint32 }](value T, length int) []byte {
 	return bytes
 }
 
-func authenticatorDataFlags(userPresent, userVerified, attestation, extensions bool) byte {
+func authenticatorDataFlags(userPresent, userVerified, backupEligible, backupState, attestation, extensions bool) byte {
 	// https://www.w3.org/TR/webauthn/#flags
 	flags := byte(0)
 	if userPresent {
@@ -50,6 +50,12 @@ func authenticatorDataFlags(userPresent, userVerified, attestation, extensions b
 	}
 	if userVerified {
 		flags |= 1 << 2
+	}
+	if backupEligible {
+		flags |= 1 << 3
+	}
+	if backupState {
+		flags |= 1 << 4
 	}
 	if attestation {
 		flags |= 1 << 6
