@@ -86,7 +86,14 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 	credData = append(credData, publicKeyData...)
 
 	rpIDHash := sha256.Sum256([]byte(rp.ID))
-	flags := authenticatorDataFlags(!auth.Options.UserNotPresent, !auth.Options.UserNotVerified, true, false)
+	flags := authenticatorDataFlags(
+		!auth.Options.UserNotPresent,
+		!auth.Options.UserNotVerified,
+		auth.Options.BackupEligible,
+		auth.Options.BackupState,
+		true,
+		false,
+	)
 
 	authData := []byte{}
 	authData = append(authData, rpIDHash[:]...)

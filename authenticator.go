@@ -4,6 +4,8 @@ type AuthenticatorOptions struct {
 	UserHandle      []byte
 	UserNotPresent  bool
 	UserNotVerified bool
+	BackupEligible  bool
+	BackupState     bool
 }
 
 type Authenticator struct {
