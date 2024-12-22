@@ -1,8 +1,8 @@
 module github.com/descope/virtualwebauthn
 
-go 1.21
+go 1.23
 
-toolchain go1.22.5
+toolchain go1.23.4
 
 require (
 	github.com/fxamacker/cbor/v2 v2.7.0
@@ -13,9 +13,9 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-webauthn/x v0.1.9 // indirect
+	github.com/go-webauthn/x v0.1.15 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
-	github.com/google/go-tpm v0.9.0 // indirect
+	github.com/google/go-tpm v0.9.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
