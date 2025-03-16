@@ -7,13 +7,13 @@ toolchain go1.24.1
 require (
 	github.com/fxamacker/cbor/v2 v2.7.0
 	github.com/fxamacker/webauthn v0.6.1
-	github.com/go-webauthn/webauthn v0.12.0
+	github.com/go-webauthn/webauthn v0.12.1
 	github.com/stretchr/testify v1.10.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-webauthn/x v0.1.17 // indirect
+	github.com/go-webauthn/x v0.1.18 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/go-tpm v0.9.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
