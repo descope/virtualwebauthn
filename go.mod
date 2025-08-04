@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.5
 
 require (
-	github.com/fxamacker/cbor/v2 v2.8.0
+	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/fxamacker/webauthn v0.6.1
 	github.com/go-webauthn/webauthn v0.13.3
 	github.com/stretchr/testify v1.10.0
