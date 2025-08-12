@@ -65,3 +65,11 @@ func authenticatorDataFlags(userPresent, userVerified, backupEligible, backupSta
 	}
 	return flags
 }
+
+func translateTransports(transports []Transport) []string {
+	encodedTransports := make([]string, 0, len(transports))
+	for _, t := range transports {
+		encodedTransports = append(encodedTransports, Transports[t])
+	}
+	return encodedTransports
+}
