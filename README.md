@@ -12,6 +12,7 @@ Check the [test](test/webauthn_test.go) for a working example on how to use this
 - Generate [attestation](https://www.w3.org/TR/webauthn-2/#authenticatorattestationresponse) and [assertion](https://www.w3.org/TR/webauthn-2/#authenticatorassertionresponse) responses
 - Supports `EC2` and `RSA` keys with `SHA256`
 - Supports `packed` attestation format
+- Supports WebAuthn Level 3 compatible responses with `clientExtensionResults`
 
 ## Usage
 
