@@ -65,7 +65,13 @@ func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions
 
 /// Response
 
+// CreateAttestationResponse creates an attestation response with default empty clientExtensionResults and Default Transports (Hybrid and Internal)
 func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credential, options AttestationOptions) string {
+	return CreateAttestationResponseWithExtensions(rp, auth, cred, options, map[string]interface{}{}, []Transport{TransportHybrid, TransportInternal})
+}
+
+// CreateAttestationResponseWithExtensions creates an attestation response with custom clientExtensionResults and transports
+func CreateAttestationResponseWithExtensions(rp RelyingParty, auth Authenticator, cred Credential, options AttestationOptions, clientExtensionResults map[string]interface{}, transports []Transport) string {
 	clientData := clientData{
 		Type:      "webauthn.create",
 		Challenge: base64.RawURLEncoding.EncodeToString(options.Challenge),
@@ -133,16 +139,20 @@ func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credent
 
 	credIDEncoded := base64.RawURLEncoding.EncodeToString(cred.ID)
 
+	translatedTransports := translateTransports(transports)
+
 	attestationResponse := attestationResponse{
 		AttestationObject: attestationObjectEncoded,
 		ClientDataJSON:    clientDataJSONEncoded,
+		Transports:        translatedTransports,
 	}
 
 	attestationResult := attestationResult{
-		Type:     "public-key",
-		ID:       credIDEncoded,
-		RawID:    credIDEncoded,
-		Response: attestationResponse,
+		Type:                   "public-key",
+		ID:                     credIDEncoded,
+		RawID:                  credIDEncoded,
+		Response:               attestationResponse,
+		ClientExtensionResults: clientExtensionResults,
 	}
 
 	attestationResultBytes, err := json.Marshal(attestationResult)
@@ -191,13 +201,15 @@ type attestationObject struct {
 }
 
 type attestationResponse struct {
-	AttestationObject string `json:"attestationObject"`
-	ClientDataJSON    string `json:"clientDataJSON"`
+	AttestationObject string   `json:"attestationObject"`
+	ClientDataJSON    string   `json:"clientDataJSON"`
+	Transports        []string `json:"transports"`
 }
 
 type attestationResult struct {
-	Type     string              `json:"type"`
-	ID       string              `json:"id"`
-	RawID    string              `json:"rawId"`
-	Response attestationResponse `json:"response"`
+	Type                   string                 `json:"type"`
+	ID                     string                 `json:"id"`
+	RawID                  string                 `json:"rawId"`
+	Response               attestationResponse    `json:"response"`
+	ClientExtensionResults map[string]interface{} `json:"clientExtensionResults"`
 }
