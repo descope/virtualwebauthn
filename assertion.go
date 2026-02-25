@@ -51,13 +51,7 @@ func ParseAssertionOptions(str string) (assertionOptions *AssertionOptions, err 
 
 /// Response
 
-// CreateAssertionResponse creates an assertion response with default empty clientExtensionResults
 func CreateAssertionResponse(rp RelyingParty, auth Authenticator, cred Credential, options AssertionOptions) string {
-	return CreateAssertionResponseWithExtensions(rp, auth, cred, options, map[string]interface{}{})
-}
-
-// CreateAssertionResponseWithExtensions creates an assertion response with custom clientExtensionResults
-func CreateAssertionResponseWithExtensions(rp RelyingParty, auth Authenticator, cred Credential, options AssertionOptions, clientExtensionResults map[string]interface{}) string {
 	clientData := clientData{
 		Type:      "webauthn.get",
 		Challenge: base64.RawURLEncoding.EncodeToString(options.Challenge),
@@ -98,6 +92,11 @@ func CreateAssertionResponseWithExtensions(rp RelyingParty, auth Authenticator, 
 	}
 
 	credIDEncoded := base64.RawURLEncoding.EncodeToString(cred.ID)
+
+	clientExtensionResults := auth.Options.ClientExtensionResults
+	if clientExtensionResults == nil {
+		clientExtensionResults = map[string]any{}
+	}
 
 	assertionResponse := assertionResponse{
 		AuthenticatorData: authDataEncoded,
@@ -144,9 +143,9 @@ type assertionResponse struct {
 }
 
 type assertionResult struct {
-	Type                   string                 `json:"type"`
-	ID                     string                 `json:"id"`
-	RawID                  string                 `json:"rawId"`
-	Response               assertionResponse      `json:"response"`
-	ClientExtensionResults map[string]interface{} `json:"clientExtensionResults"`
+	Type                   string            `json:"type"`
+	ID                     string            `json:"id"`
+	RawID                  string            `json:"rawId"`
+	Response               assertionResponse `json:"response"`
+	ClientExtensionResults map[string]any    `json:"clientExtensionResults"`
 }
