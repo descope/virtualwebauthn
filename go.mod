@@ -2,7 +2,7 @@ module github.com/descope/virtualwebauthn
 
 go 1.24.0
 
-toolchain go1.24.6
+toolchain go1.25.7
 
 require (
 	github.com/fxamacker/cbor/v2 v2.9.0
