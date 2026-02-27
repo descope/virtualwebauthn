@@ -11,7 +11,7 @@ const (
 	TransportInternal
 )
 
-var Transports = map[Transport]string{
+var transportNames = map[Transport]string{
 	TransportUSB:       "usb",
 	TransportNFC:       "nfc",
 	TransportBLE:       "ble",

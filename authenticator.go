@@ -1,11 +1,13 @@
 package virtualwebauthn
 
 type AuthenticatorOptions struct {
-	UserHandle      []byte
-	UserNotPresent  bool
-	UserNotVerified bool
-	BackupEligible  bool
-	BackupState     bool
+	UserHandle             []byte
+	UserNotPresent         bool
+	UserNotVerified        bool
+	BackupEligible         bool
+	BackupState            bool
+	Transports             []Transport
+	ClientExtensionResults map[string]any
 }
 
 type Authenticator struct {
