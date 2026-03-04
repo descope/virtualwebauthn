@@ -67,9 +67,11 @@ func authenticatorDataFlags(userPresent, userVerified, backupEligible, backupSta
 }
 
 func translateTransports(transports []Transport) []string {
-	encodedTransports := make([]string, 0, len(transports))
+	result := []string{}
 	for _, t := range transports {
-		encodedTransports = append(encodedTransports, Transports[t])
+		if name, ok := transportNames[t]; ok {
+			result = append(result, name)
+		}
 	}
-	return encodedTransports
+	return result
 }

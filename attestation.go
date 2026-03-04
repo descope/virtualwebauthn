@@ -65,13 +65,7 @@ func ParseAttestationOptions(str string) (attestationOptions *AttestationOptions
 
 /// Response
 
-// CreateAttestationResponse creates an attestation response with default empty clientExtensionResults and Default Transports (Hybrid and Internal)
 func CreateAttestationResponse(rp RelyingParty, auth Authenticator, cred Credential, options AttestationOptions) string {
-	return CreateAttestationResponseWithExtensions(rp, auth, cred, options, map[string]interface{}{}, []Transport{TransportHybrid, TransportInternal})
-}
-
-// CreateAttestationResponseWithExtensions creates an attestation response with custom clientExtensionResults and transports
-func CreateAttestationResponseWithExtensions(rp RelyingParty, auth Authenticator, cred Credential, options AttestationOptions, clientExtensionResults map[string]interface{}, transports []Transport) string {
 	clientData := clientData{
 		Type:      "webauthn.create",
 		Challenge: base64.RawURLEncoding.EncodeToString(options.Challenge),
@@ -139,7 +133,16 @@ func CreateAttestationResponseWithExtensions(rp RelyingParty, auth Authenticator
 
 	credIDEncoded := base64.RawURLEncoding.EncodeToString(cred.ID)
 
+	transports := auth.Options.Transports
+	if len(transports) == 0 {
+		transports = []Transport{TransportInternal}
+	}
 	translatedTransports := translateTransports(transports)
+
+	clientExtensionResults := auth.Options.ClientExtensionResults
+	if clientExtensionResults == nil {
+		clientExtensionResults = map[string]any{}
+	}
 
 	attestationResponse := attestationResponse{
 		AttestationObject: attestationObjectEncoded,
@@ -207,9 +210,9 @@ type attestationResponse struct {
 }
 
 type attestationResult struct {
-	Type                   string                 `json:"type"`
-	ID                     string                 `json:"id"`
-	RawID                  string                 `json:"rawId"`
-	Response               attestationResponse    `json:"response"`
-	ClientExtensionResults map[string]interface{} `json:"clientExtensionResults"`
+	Type                   string              `json:"type"`
+	ID                     string              `json:"id"`
+	RawID                  string              `json:"rawId"`
+	Response               attestationResponse `json:"response"`
+	ClientExtensionResults map[string]any      `json:"clientExtensionResults"`
 }

@@ -12,7 +12,7 @@ Check the [test](test/webauthn_test.go) for a working example on how to use this
 - Generate [attestation](https://www.w3.org/TR/webauthn-2/#authenticatorattestationresponse) and [assertion](https://www.w3.org/TR/webauthn-2/#authenticatorassertionresponse) responses
 - Supports `EC2` and `RSA` keys with `SHA256`
 - Supports `packed` attestation format
-- Supports WebAuthn Level 3 compatible responses with `clientExtensionResults`
+- Supports WebAuthn Level 3 compatible responses with `clientExtensionResults` and `transports`
 
 ## Usage
 
@@ -24,8 +24,14 @@ First we create mock entities to work with for running tests.
 // The relying party settings should mirror those on the actual WebAuthn server
 rp := virtualwebauthn.RelyingParty{Name: "Example Corp", ID: "example.com", Origin: "https://example.com"}
 
-// A mock authenticator that represents a security key or biometrics module
+// A mock authenticator that represents a platform authenticator (defaults to internal transport)
 authenticator := virtualwebauthn.NewAuthenticator()
+
+// Optionally configure authenticator transports and client extension results
+authenticator = virtualwebauthn.NewAuthenticatorWithOptions(virtualwebauthn.AuthenticatorOptions{
+    Transports:             []virtualwebauthn.Transport{virtualwebauthn.TransportUSB, virtualwebauthn.TransportInternal},
+    ClientExtensionResults: map[string]any{"credProps": map[string]any{"rk": true}},
+})
 
 // Create a new credential that we'll try to register with the relying party
 credential := virtualwebauthn.NewCredential(virtualwebauthn.KeyTypeEC2)
