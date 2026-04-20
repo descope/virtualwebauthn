@@ -47,8 +47,9 @@ func newEC2SigningKeyWithPrivateKey(privateKey *ecdsa.PrivateKey) *ec2SigningKey
 		Type:      ec2Type,
 		Algorithm: ec2SHA256Algo,
 		Curve:     ec2P256Curve,
-		X:         privateKey.X.Bytes(),
-		Y:         privateKey.Y.Bytes(),
+		// According to RFC 9053, the X and Y coordinates are 32 bytes long and left-padded with zeros.
+		X: privateKey.X.FillBytes(make([]byte, 32)),
+		Y: privateKey.Y.FillBytes(make([]byte, 32)),
 	}
 	attestationData := marshalCbor(info)
 	return &ec2SigningKey{privateKey: privateKey, attestationData: attestationData}
