@@ -5,14 +5,14 @@ go 1.25.0
 require (
 	github.com/fxamacker/cbor/v2 v2.9.2
 	github.com/fxamacker/webauthn v0.6.1
-	github.com/go-webauthn/webauthn v0.17.2
+	github.com/go-webauthn/webauthn v0.17.3
 	github.com/stretchr/testify v1.11.1
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
-	github.com/go-webauthn/x v0.2.3 // indirect
+	github.com/go-webauthn/x v0.2.5 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
 	github.com/google/uuid v1.6.0 // indirect
